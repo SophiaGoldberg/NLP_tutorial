@@ -1,0 +1,242 @@
+-------------------
+NLP DataCamp course
+-------------------
+
+1. Regular expressions & word tokenization
+------------------------------------------
+
+
+
+
+VIDEO 1.1. Introduction to regular expressions 
+----------------------------------------------
+----------------------------------------------
+
+NLP
+---
+
+- topic identification, e.g. chatbots
+- text classification, e.g. translation and sentiment analysis
+
+Regex-regular expressions
+-------------------------
+
+- allow us to match patterns in strings, e.g. 
+	- find all weblinks in a doc
+	- parse email addresses or remove/replace unwanted characters
+
+In Python
+---------
+
+import re
+re.match('abc','abcdef') # matches pattern with a string
+OUT: <_sre.SRE_Match object; span=(0,3), match='abc'>
+
+word_regex='\w+' #matching a word
+re.match(word_regex, 'hi there') #matches first word it has found
+OUT: <...; span(0,2), match='hi'>
+
+Common regex patterns
+---------------------
+
+pattern |	matches |		example
+------------------------------------
+\w+		|	word 		|	'Magic'
+\d 		|	digit 		|	9
+\s 		|	spaces 		|	' '
+.* 		| 	wildcard	|	'username74' 	| can be anything .e.g. anything in square brackets
++ or * 	| 	greedy matches| 	'aaaaa'		| matches repeats of single letters or WHOLE patterns e.g. \w+ matches a WHOLE (from the +) word
+\S 		| 	NOT space 	|	'no_spaces' 	| ALL non-whitespace characters
+[a-z]	| 	lowercase group|	'abcdefg...'
+
+Python's re Module
+------------------
+
+- re modulde
+- split: on a stron on regex
+- findall: find all patterns in a string
+- search: search for a pattern -- similar to 'match' but does not have to occur from the beginning
+- match: match an entire string or substring based on a pattern FROM THE BEGINNING
+
+- Pattern first, string second
+- Returns: iterator, string or match object 
+
+e.g.
+re.split('\s+', 'Split on spaces.')
+OUT: ['Split', 'on', 'spaces.']
+^ FOR tokenisation
+
+------------------------
+CODE: 1.1.1 Which pattern?
+------------------------
+
+------------------------------------------------------------------------
+CODE: 1.1.2 Practicing regular expressions: re.split() and re.findall()
+
+Note:
+
+- It's important to prefix your regex patterns with r to ensure that your patterns are interpreted in the way you want them to. Else, you may encounter problems to do with escape sequences in strings. For example, "\n" in Python is used to indicate a new line, but if you use the r prefix, it will be interpreted as the raw string "\n" - that is, the character "\" followed by the character "n" - and not as a new line.
+- | is the or operator
+
+------------------------------------------------------------------------
+
+
+
+
+VIDEO 1.2. Introduction to tokenization
+---------------------------------------
+---------------------------------------
+
+What is tokenization?
+---------------------
+
+- Turning string or document into tokens, smaller chunks
+- First step in preparing a text for NLP
+- Many ways of tokenizing, e.g.
+	- you can make your own!
+	- break out words/sentences
+	- sperating on punctuations
+	- seperating all hashtags in a string
+
+nltk library
+------------
+
+- nltk: natural language toolkit
+	e.g.
+	In [1]: from nltk.tokenize import word_tokenize
+	In [2]: word_tokenize("Hi there!") 
+	Out[2]: ['Hi', 'there', '!']
+
+Why tokenize?t
+-------------
+
+- Match part of speech
+- Match common words
+- Remove unwanted tokens
+- e.g. 	
+	- 'I don't like Sam's shoes.'
+	- "I", "do", "n't", "like", "Sam", "'s", "shoes", "."
+	- Negation in n't and possesson in 's! USEFUL FOR SENTIMENT ANALYSIS
+
+Other nltk tokenizers
+---------------------
+
+- sent_tokenize: tokenize a document into sentences
+- regexp_tokenize: tokenize a string or document based on a regular expression pattern
+- TweetTokenizer: special class just for tweet tokenization, allowing you to separate hashtags, mentions and lots of exclamation points!!!
+
+Difference between re.search() and re.match()
+---------------------------------------------
+
+In [1]: import re
+
+In [2]: re.match('abc', 'abcde')
+Out[2]: <_sre.SRE_Match object; span=(0, 3), match='abc'>
+
+In [3]: re.search('abc', 'abcde')
+Out[3]: <_sre.SRE_Match object; span=(0, 3), match='abc'>
+
+In [4]: re.match('cd', 'abcde') #only runs from beginning of string
+
+In [5]: re.search('cd', 'abcde')
+Out[5]: <_sre.SRE_Match object; span=(2, 4), match='cd'> #search runs through the entire string 
+
+---------------------------------------
+CODE: 1.2.1 Word tokenization with NLTK
+---------------------------------------
+
+---------------------------------------
+CODE: 1.2.2 More regex with re.search()
+---------------------------------------
+
+
+
+
+VIDEO 1.3. Advanced tokenization with NLTK and regex
+----------------------------------------------------
+----------------------------------------------------
+
+Regex groups using or "|"
+-------------------------
+
+- OR is represented using |
+- A group using ()
+- Explicit character ranges using []
+	-  e.g.
+	In [1]: import re 
+	In [2]: match_digits_and_words = ('(\d+|\w+)')
+	In [3]: re.findall(match_digits_and_words, 'He has 11 cats.')
+	Out[3]: ['He', 'has', '11', 'cats']
+
+Regex ranges and groups
+-----------------------
+
+pattern				matches											example
+[A-Za-z]+			upper and lowercase English alphabet			'ABCDEFghijk'
+[0-9]				numbers from 0 to 9								9
+[A-Za-z\-\.]+		upper and lowercase English alphabet, - and .	'My-Website.com'
+(a-z)				a, - and z										'a-z'
+(\s+l,)				spaces or a comma								', '
+
+-------------------------------
+CODE 1.3.1 Choosing a tokenizer
+-------------------------------
+
+---------------------------------------
+CODE 1.3.2 Regex with NLTK tokenization
+---------------------------------------
+
+----------------------------
+1.3.3 Non-ascii tokenization
+----------------------------
+
+
+
+
+VIDEO 1.4. Charting word length with NLTK
+-----------------------------------------
+-----------------------------------------
+
+matplotlib
+----------
+- OS Python for data vis
+- e.g.
+	- Histograms
+	- Bar charts
+	- Line charts
+	- Scatter plots
+	- 3D graphs and animations
+
+e.g.
+----
+In [1]: from matplotlib import pyplot as plt
+In [2]: plt.hist([1, 5, 5, 7, 7, 7, 9])
+Out[2]: (array([ 1.,  0.,  0.,  0.,  0.,  2.,  0.,  3.,  0.,  1.]),
+        array([ 1. ,  1.8,  2.6,  3.4,  4.2,  5. ,  5.8,  6.6,  
+                                               7.4,  8.2,  9. ]),
+        <a list of 10 Patch objects>)
+In [3]: plt.show()
+GIVES A CHART
+
+e.g. word lengths
+-----------------
+
+In [1]: from matplotlib import pyplot as plt
+
+In [2]: from nltk.tokenize import word_tokenize
+In [3]: words = word_tokenize("This is a pretty cool tool!")
+In [4]: word_lengths = [len(w) for w in words]
+In [5]: plt.hist(word_lengths)
+Out[5]: (array([ 2.,  0.,  1.,  0.,  0.,  0.,  3.,  0.,  0.,  1.]),
+        array([ 1. ,  1.5,  2. ,  2.5,  3. ,  3.5,  4. ,  4.5,  5. ,  5.5,
+                                                                    6. ]),
+        <a list of 10 Patch objects>)
+In [6]: plt.show()
+
+----------------------------
+CODE 1.4.1 Charting practice
+----------------------------
+
+
+
+

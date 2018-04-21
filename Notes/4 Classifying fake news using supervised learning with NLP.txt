@@ -1,0 +1,297 @@
+-------------------
+NLP DataCamp course
+-------------------
+
+4. Building a "fake news" classifier
+------------------------------------
+
+
+
+
+VIDEO 4.1. Classifying fake news using supervised learning with NLP
+-------------------------------------------------------------------
+-------------------------------------------------------------------
+
+Supervised learning
+-------------------
+
+- Predefined labels
+- e.g. classification given language
+- use sklearn
+- can use bag of words models or tf-idf as features
+
+IMDB Movie Dataset
+------------------
+
+- taking only movies which are EITHER sci-fi or action
+- e.g.
+
+Plot	Sci-Fi	Action
+In a post-apocalyptic world in human decay, a ...	1	0
+Mohei is a wandering swordsman. He arrives in ...	0	1
+#137 is a SCI/FI thriller about a girl, Marla,...	1	0
+- Goal: Predict movie genre based on plot summary
+- Categorical features generated using preprocessing
+- NOTE here the inverse of sci-fi is action and the inverse of action is sci-fi
+
+Supervised ML steps:
+--------------------
+
+- Collect and preprocess our data
+- Determine a label (Example: Movie genre)
+- Split data into training and test sets
+- Extract features from the text to help predict the label
+	- Bag-of-words vector built into scikit-learn
+- Evaluate trained model using the test set. CAN ALSO USE k-fold cross validation
+
+------------------------------------------------------------------------
+TEST/CODE 4.3.1 Which possible features?
+
+Q Which of the following are possible features for a text classification problem?
+A ALL of these:
+- Number of words in a document
+- Specific named entities
+- Language
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+TEST/CODE 4.3.2 Training and testing
+
+Q What datasets are needed for supervised learning?
+A Both training and test data
+------------------------------------------------------------------------
+
+
+
+
+VIDEO 4.2. Building word count vectors with scikit-learn
+--------------------------------------------------------
+--------------------------------------------------------
+
+Predicting movie genre
+----------------------
+- Dataset consisting of movie plots and corresponding genre (either action or sci-fi)
+- Goal: Create bag-of-word vectors for the movie plots
+	- Can we predict genre based on the words used in the plot summary?
+
+Count Vectorizer in python
+--------------------------
+
+In [1]: import pandas as pd
+
+In [2]: from sklearn.model_selection import train_test_split
+
+In [3}: from sklearn.feature_extraction.text import CountVectorizer
+In [4]: df = ... # Load data into DataFrame
+In [5]: y = df['Sci-Fi']
+In [6]: X_train, X_test, y_train, y_test = train_test_split(
+                                             df['plot'], y, 
+                                             test_size=0.33, 
+                                             random_state=53)
+In [7]: count_vectorizer = CountVectorizer(stop_words='english')
+In [8]: count_train = count_vectorizer.fit_transform(X_train.values)
+In [9]: count_test = count_vectorizer.transform(X_test.values)
+#This creates bag of words (BAW) vectors using the SAME dictionary
+#the training and test data need to use a consistent set of words
+#so the trained model can understand the test input. 
+#if we don't have much data we can have an issue that words in the test set
+#don't appear in the training data. THIS WILL THROW AN ERROR
+#So we either need to 
+#	- add more training data OR
+#	- remove the unknown words from the test data
+
+IN only a few lines of code we have transformed text into BOW VECTS and generated training and test datasets
+
+
+
+--------------------------------------------------
+CODE 4.2.1 CountVectorizer for text classification
+--------------------------------------------------
+
+
+--------------------------------------------------
+CODE 4.2.2 TfidfVectorizer for text classification
+--------------------------------------------------
+
+
+---------------------------------
+CODE 4.2.3 Inspecting the vectors
+---------------------------------
+
+
+
+
+VIDEO 4.3. Training and testing a classification model with scikit-learn
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+
+Naive Bayes classifier
+----------------------
+
+- Naive Bayes Model
+	- Commonly used for testing NLP classification problems
+	- Basis in probability
+- Given a particular piece of data, how likely is a particular outcome?
+- Examples:
+	- If the plot has a spaceship, how likely is it to be sci-fi?
+	- Given a spaceship and an alien, how likely now is it sci-fi?
+- Each word from CountVectorizer acts as a feature
+- Naive Bayes: Simple and effective
+
+Naive Bayes with scikit-learn
+-----------------------------
+
+#MultinomialNB model expects integer inputs, so works well with countvectorizer
+#used for multiple label classification
+#not work so well with float inputs, like tfidf (for which you should use SVMs or linear models, although NaiveBayes first, to see if that works well)
+
+- e.g.
+
+In  [10]: from sklearn.naive_bayes import MultinomialNB
+In  [11]: from sklearn import metrics
+In  [12]: nb_classifier = MultinomialNB()
+
+In  [13]: nb_classifier.fit(count_train, y_train)
+In  [14]: pred = nb_classifier.predict(count_test)
+In  [15]: metrics.accuracy_score(y_test, pred)
+Out [15]: 0.85841849389820424
+
+Confusion matrix
+----------------
+
+- Shows correct and incorrect labels
+In  [16]: metrics.confusion_matrix(y_test, pred, labels=[0,1])
+Out [16]: 
+array([[6410,  563],
+       [ 864, 2242]])
+
+- Shows: 
+
+		Action	Sci-Fi
+Action	6410	563
+Sci-Fi	864		2242
+
+#many more action movies than sci-fi, so this could be why they are more accurate
+
+
+
+----------------------------------------------------------------------
+TEST/CODE 4.3.1 Text classification models
+
+Q Which of the below is the most reasonable model to use when training a new supervised model using text vector data?
+
+A Naive Bayes 
+(not Random Forests, Linear Regression or Deep Learning)
+---------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------
+CODE 4.3.2 Training and testing the "fake news" model with CountVectorizer 
+--------------------------------------------------------------------------
+
+
+
+--------------------------------------------------------------------------
+CODE 4.3.3 Training and testing the "fake news" model with TfidfVectorizer
+--------------------------------------------------------------------------
+
+
+
+
+VIDEO 4.4 Simple NLP, complex problems
+--------------------------------------
+--------------------------------------
+
+Translation
+-----------
+- e.g. https://twitter.com/Lupintweets/status/865533182455685121
+- all the different words in germamn for economics are cloest to the English word vector for economics
+
+Sentiment analysis
+------------------
+
+- e.g. https://nlp.stanford.edu/projects/socialsent/)
+- Open problems include: sarcasm, snark, difficult problems with negation (I liked it but it could have been better)
+
+Language bias
+-------------
+
+- e.g. https://www.youtube.com/watch?v=j7FwpZB1hWc
+- ethics of ML: recently studied by princton lect Iland caliskin, she gave a talk at the 33rd annual conference, computer club conf in hamburg
+- She's a prof. He's a babysitter. Translated to Turkish (no genders) and BACK to English becomes He's a prof. She's a babysitter, because of language bias in the training data
+
+
+
+----------------------------------------------------------------------
+TEST/CODE 4.4.1 Improving the model
+
+Q What are possible next steps you could take to improve the model?
+
+A All of these:
+- Tweaking alpha levels.
+- Trying a new classification model.
+- Training on a larger dataset.
+- Improving text preprocessing.
+
+---------------------------------------------------------------------
+
+
+
+-------------------------------
+CODE 4.4.2 Improving your model
+-------------------------------
+
+
+--------------------------------
+CODE 4.4.3 Inspecting your model
+--------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

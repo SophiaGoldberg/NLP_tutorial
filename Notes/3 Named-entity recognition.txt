@@ -1,0 +1,326 @@
+-------------------
+NLP DataCamp course
+-------------------
+
+3. Named-entity recognition
+---------------------------
+
+
+
+
+
+VIDEO 3.1. Named-entity recognition
+-----------------------------------
+-----------------------------------
+
+What is Named Entity Recognition? 
+---------------------------------
+
+- AKA NER
+- NLP task to identify important named entities in the text
+- e.g.
+	- People, places, organizations
+	- Dates, states, works of art
+	- ... and other categories!
+- Can be used alongside topic identification ... or on its own!
+- Answers: Who? What? When? Where?
+
+Example NER
+-----------
+
+Articles on Albert Einstein
+- Dates, locations, people and organisations found and extract info from the text based on these entitiies
+- Can NER to solve problems like fact extraction
+- Which entities are related using computational language models
+- e.g. we can see Einstein has something to do with:
+	- the US
+	- Germany
+	- Bertrand Russel formed Einstein-Russel manifesto
+
+NLTK allows us to interact with NER via its own model, but also via the Stanford CoreNLP Library...
+
+nltk and the Stanford CoreNLP Library
+-------------------------------------
+
+- The Stanford CoreNLP library, whjat is needed:
+	- Integrated into Python via nltk
+	- Need to install: the required Java files, and set system environment variables
+	- Can use the Stanford CoreNLP library on its own, without integrating it with NLTK/ operate it as an API server
+	- Support for NER as well as related NLP tasks such as coreference (linking pronouns and entities together) and dependency trees (derives meaning from relationships between words or phrases in a sentence)
+- In summary, you need: NLTK, the Standford Java Libraries and some environment variables to help with integration
+
+Using nltk for NER
+------------------
+
+- For our simple usecase we use built in NER w nltk
+- e.g. CODE:
+
+In [1]: import nltk
+
+In [2]: sentence = '''In New York, I like to ride the Metro to visit MOMA 
+                      and some restaurants rated well by Ruth Reichl.'''
+
+In [3]: tokenized_sent = nltk.word_tokenize(sentence) 
+In [4]: tagged_sent = nltk.pos_tag(tokenized_sent) #Adds tags for proper nouns, nouns, verbs etc. based on English grammar
+Out[5]: [('In', 'IN'), ('New', 'NNP'), ('York', 'NNP')] # NNP <-> proper noun singular 
+
+In [6]: print(nltk.ne_chunk(tagged_sent)) #nltk's ne_chunk()
+(S
+  In/IN
+  (GPE New/NNP York/NNP)
+  ,/,
+  I/PRP
+  like/VBP
+  to/TO
+  ride/VB
+  the/DT
+  (ORGANIZATION Metro/NNP)
+  to/TO
+  visit/VB
+  (ORGANIZATION MOMA/NNP)
+  and/CC
+  some/DT
+  restaurants/NNS
+  rated/VBN
+  well/RB
+  by/IN
+  (PERSON Ruth/NNP Reichl/NNP)
+  ./.)
+#returns the sentence as a tree. Does have leaves and subtrees representing more complex grammar. 
+# GPE - geopolitical entitiy. 
+#MOMA and Metro are Organisations.
+#Ruth Reichel is a person
+
+This does not consult a knowledge base like Wiki, it does so using trained statistical and gramatical parsers.
+
+
+------------------------
+CODE 3.1.1 NER with NLTK
+------------------------
+
+
+----------------------------
+CODE 3.1.2 Charting practice
+----------------------------
+
+
+---------------------------------------------------------------------------------------------
+TEST/CODE 3.1.3 Stanford library with NLTK
+
+Q When using the Stanford library with NLTK, what is needed to get started?
+
+A NLTK, the Standford Java Libraries and some environment variables to help with integration.
+---------------------------------------------------------------------------------------------
+
+
+
+
+VIDEO 3.2. Introduction to SpaCy
+--------------------------------
+--------------------------------
+
+What is SpaCy?
+--------------
+
+- NLP library similar to gensim, with different implementations
+- Focus on creating NLP pipelines to generate models and corpora
+- Open-source, with extra libraries and tools
+	- e.g. Displacy: a vis tool for viewing parse trees which uses nodejs to create interactive text
+
+Displacy entity recognition visualizer
+--------------------------------------
+
+- If we use the Displacy entity recognisation visualiser 
+- Live demo online: (source: https://demos.explosion.ai/displacy-ent/)
+- e.g. 'In New York, I like to ride the Metro to visit MOMA and some restaurants rated well by Ruth Reichl.' 
+- Displacy then labels the following:
+ 	- NY as GPE
+ 	- MOMA as ORG
+ 	- Ruth Reichl as Person
+
+ SpaCy NER
+ ---------
+
+ - SpaCy allows us to build word/document vectors from text
+ - Download and install SpaCy and download all the appropriate pre-trained word vectors. You can also train word vectors yourself, but the pre-trained word vectors let us get started imideately 
+
+
+In [1]: import spacy
+In [2]: nlp = spacy.load('en')
+#functions similarly to gensim dict and corpus
+#nlp has several linked objects such as...
+In [3]: nlp.entity
+Out[3]: <spacy.pipeline.EntityRecognizer at 0x7f76b75e68b8>
+#aka an entity recogniser object from the pipeline module, used to find entities in the text
+
+In [4]: doc = nlp("""Berlin is the capital of Germany; and the residence of Chancellor Angela Merkel.""")
+#load a new doc by passing a string of the document into the nlp variable
+#when the doc is loaded the named entites are saved as a document attribute called ents...
+
+In [5]: doc.ents
+Out[5]: (Berlin, Germany, Angela Merkel)
+#spacy has tagged and found the 3 most useful entities!
+
+In [6]: print(doc.ents[0], doc.ents[0].label_)
+Out[6]: Berlin GPE
+# can also invetigate the labels for each entity by looking at the entity, and the label_ attribute AND index notation
+
+- SpaCy also has advanced German and Chinese implementation models
+- Great tool if you want to build your now extraction and NLP pipeline quickly and interatively.
+
+Why use SpaCy for NER?
+----------------------
+
+- Easy pipeline creation
+- Different entity types compared to nltk
+- Informal language corpora
+	- Easily find entities in Tweets and chat messages
+- Quickly growing!
+
+
+----------------------------------------
+CODE 3.2.1 Comparing NLTK with spaCy NER
+----------------------------------------
+
+
+--------------------------------------------------------------------------------------------------
+TEST/CODE 3.2.2 SpaCy V nltk NER Categories
+
+Q Which are the extra categories that spacy uses compared to nltk in its named-entity recognition?
+
+A NORP, CARDINAL, MONEY, WORKOFART, LANGUAGE, EVENT
+--------------------------------------------------------------------------------------------------
+
+
+
+
+VIDEO 3.3. Multilingual NER with polyglot
+-----------------------------------------
+-----------------------------------------
+
+What is polyglot? - ANOTHER NLP lib (as well as gensim and spacy)
+-----------------
+
+- YET ANOTHER: NLP library which uses word vectors
+- Supports wide variety of langs, 130+ languages
+- Good for transliteration! (to swap characters of lang with another)
+- Issues in translation created by word vectors, as found by google translate 
+	- BUT polyglot such a cool open source tool
+
+Spanish NER with polyglot
+-------------------------
+
+- Instead of transliteration, we're going to use polyglot to perform named entity recognition, NER
+- Similar to spacy, you need to have the proper vectors DOWNLOADED and INSTALLED before you begin
+	- once you've done this you do not need to tell polyglot the language you're using
+	- polyglot will use the lang detection model to do so, when the text obj is initialised by passing in the doc string
+	- e.g. see In[3], below
+
+In [1]: from polyglot.text import Text
+
+In [2]: ẗext = """El presidente de la Generalitat de Cataluña,
+                  Carles Puigdemont, ha afirmado hoy a la alcaldesa 
+                  de Madrid, Manuela Carmena, que en su etapa de 
+                  alcalde de Girona (de julio de 2011 a enero de 2016) 
+                  hizo una gran promoción de Madrid."""
+
+In [3]: ptext = Text(text)
+
+In [4]: ptext.entities
+Out[4]: 
+[I-ORG(['Generalitat', 'de']), 					#organisation 
+ I-LOC(['Generalitat', 'de', 'Cataluña']), 		#location
+ I-PER(['Carles', 'Puigdemont']),				#person
+ I-LOC(['Madrid']),
+ I-PER(['Manuela', 'Carmena']),
+ I-LOC(['Girona']),
+ I-LOC(['Madrid'])]
+#entiy chunks found while parsing the text 
+#each entity label starts with 'I'
+
+#DUPLICATION IN FIRST TWO LINES
+#because the phrase represents a location 'Cataluña' and the organisation 'Generalitat'
+#you may need to clean entities when they don't match your expected labels/have substrings you'd rather not track
+
+
+
+-------------------------------------
+CODE 3.3.1 French NER with polyglot I
+-------------------------------------
+
+
+---------------------------------
+3.3.2 French NER with polyglot II
+---------------------------------
+
+
+-------------------------------
+3.3.3 Spanish NER with polyglot
+-------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
